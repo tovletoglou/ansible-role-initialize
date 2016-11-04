@@ -1,26 +1,17 @@
 ---
 
 - name: Disable SELinux
-  selinux: state=disabled
+  selinux:
+    state: "{{ initialize_selinux }}"
+
+- name: Install basic packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ initialize_packages }}"
 
 - name: Update Yum
-  yum: name=* state=latest
-
-- name: Install basic packages (curl, wget, etc.)
-  yum: pkg={{ item }} state=latest
-  with_items:
-    - curl
-    - gcc
-    - kernel-devel
-    - libzip
-    - man
-    - postfix
-    - unzip
-    - vim
-    - wget
-
-- name: Install extra packages (nano, tree, etc.)
-  yum: pkg={{ item }} state=latest
-  with_items:
-    - nano
-    - tree
+  yum:
+    name: "*"
+    state: latest
+  when: initialize_yum_update

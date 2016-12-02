@@ -10,12 +10,15 @@ initialize_packages:
   - kernel-devel
   - libzip
   - man
+  - nano
+  - net-tools
+  - nmap
   - postfix
+  - tree
   - unzip
   - vim
   - wget
-  - nano
-  - tree
+  - zip
 
 # Update all packages to the latest version.
 initialize_yum_update: yes

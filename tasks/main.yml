@@ -4,14 +4,28 @@
   selinux:
     state: "{{ initialize_selinux }}"
 
-- name: Install basic packages
+- name: Install basic packages for Centos
   yum:
     name: "{{ item }}"
     state: present
   with_items: "{{ initialize_packages }}"
+  when: ansible_distribution == 'CentOS' and ansible_distribution_version >= '7'
 
-- name: Update Yum
+- name: Install basic packages for Fedora
+  dnf:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ initialize_packages }}"
+  when: ansible_distribution == 'Fedora' and ansible_distribution_version >= '25'
+
+- name: Update yum
   yum:
     name: "*"
     state: latest
-  when: initialize_yum_update
+  when: initialize_packages_update and ansible_distribution == 'CentOS' and ansible_distribution_version >= '7'
+
+- name: Update dnf
+  dnf:
+    name: "*"
+    state: latest
+  when: initialize_packages_update and ansible_distribution == 'Fedora' and ansible_distribution_version >= '25'

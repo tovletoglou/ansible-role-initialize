@@ -21,4 +21,4 @@ initialize_packages:
   - zip
 
 # Update all packages to the latest version.
-initialize_yum_update: yes
+initialize_packages_update: yes

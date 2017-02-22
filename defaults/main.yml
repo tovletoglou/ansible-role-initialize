@@ -3,22 +3,15 @@
 # The SELinux mode (enforcing | permissive | disabled).
 initialize_selinux: disabled
 
-# Packages installed with yum.
+# Packages installed with yum/dnf.
 initialize_packages:
-  - curl
-  - gcc
-  - kernel-devel
-  - libzip
-  - man
-  - nano
-  - net-tools
-  - nmap
-  - postfix
-  - tree
-  - unzip
-  - vim
-  - wget
-  - zip
+  # - packages-to-install
+
+initialize_packages_remove:
+  # - packages-to-remove
 
 # Update all packages to the latest version.
 initialize_packages_update: yes
+
+# Enable debug output
+initialize_debug: false

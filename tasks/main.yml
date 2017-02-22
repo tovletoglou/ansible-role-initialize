@@ -3,29 +3,49 @@
 - name: Disable SELinux
   selinux:
     state: "{{ initialize_selinux }}"
+  register: initialize_selinux_output
 
-- name: Install basic packages for Centos
-  yum:
+- name: Install packages
+  package:
     name: "{{ item }}"
     state: present
   with_items: "{{ initialize_packages }}"
-  when: ansible_distribution == 'CentOS' and ansible_distribution_version >= '7'
+  register: initialize_packages_output
+  when: initialize_packages|default(None) != None
 
-- name: Install basic packages for Fedora
-  dnf:
+- name: Remove packages
+  package:
     name: "{{ item }}"
-    state: present
-  with_items: "{{ initialize_packages }}"
-  when: ansible_distribution == 'Fedora' and ansible_distribution_version >= '25'
+    state: absent
+  with_items: "{{ initialize_packages_remove }}"
+  register: initialize_packages_remove_output
+  when: initialize_packages_remove|default(None) != None
 
-- name: Update yum
+- name: Update yum on Centos/RedHat
   yum:
     name: "*"
     state: latest
-  when: initialize_packages_update and ansible_distribution == 'CentOS' and ansible_distribution_version >= '7'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_version >= '7'
+  register: initialize_yum_update_output
 
-- name: Update dnf
+- name: Update dnf on Fedora
   dnf:
     name: "*"
     state: latest
   when: initialize_packages_update and ansible_distribution == 'Fedora' and ansible_distribution_version >= '25'
+  register: initialize_dnf_update_output
+
+- debug: var=initialize_selinux_output
+  when: initialize_selinux_output.changed and initialize_debug
+
+- debug: var=initialize_packages_output
+  when: initialize_packages_output.changed and initialize_debug
+
+- debug: var=initialize_packages_remove_output
+  when: initialize_packages_remove_output.changed and initialize_debug
+
+- debug: var=initialize_yum_update_output
+  when: initialize_yum_update_output.changed and initialize_debug
+
+- debug: var=initialize_dnf_update_output
+  when: initialize_dnf_update_output.changed and initialize_debug

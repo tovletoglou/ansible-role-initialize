@@ -1,7 +1,10 @@
 ---
 
-# The SELinux mode (enforcing | permissive | disabled).
-initialize_selinux: disabled
+# SELinux state (enforcing | permissive | disabled).
+initialize_selinux_state: disabled
+
+# SELinux policy (default: targeted)
+initialize_selinux_policy: targeted
 
 # Packages installed with yum/dnf.
 initialize_packages:
@@ -13,5 +16,5 @@ initialize_packages_remove:
 # Update all packages to the latest version.
 initialize_packages_update: yes
 
-# Enable debug output
+# Enable debug output.
 initialize_debug: false

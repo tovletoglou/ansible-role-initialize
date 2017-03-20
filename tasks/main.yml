@@ -1,11 +1,14 @@
 ---
 
-- name: Disable SELinux
+- name: Setup SELinux
+  become: yes
   selinux:
-    state: "{{ initialize_selinux }}"
+    state: "{{ initialize_selinux_state }}"
+    policy: "{{ initialize_selinux_policy }}"
   register: initialize_selinux_output
 
 - name: Install packages
+  become: yes
   package:
     name: "{{ item }}"
     state: present
@@ -14,6 +17,7 @@
   when: initialize_packages|default(None) != None
 
 - name: Remove packages
+  become: yes
   package:
     name: "{{ item }}"
     state: absent
@@ -22,6 +26,7 @@
   when: initialize_packages_remove|default(None) != None
 
 - name: Update yum on Centos/RedHat
+  become: yes
   yum:
     name: "*"
     state: latest
@@ -29,23 +34,29 @@
   register: initialize_yum_update_output
 
 - name: Update dnf on Fedora
+  become: yes
   dnf:
     name: "*"
     state: latest
   when: initialize_packages_update and ansible_distribution == 'Fedora' and ansible_distribution_version >= '25'
   register: initialize_dnf_update_output
 
-- debug: var=initialize_selinux_output
+- name: SELinux debug output
+  debug: var=initialize_selinux_output
   when: initialize_selinux_output.changed and initialize_debug
 
-- debug: var=initialize_packages_output
+- name: Install packages debug output
+  debug: var=initialize_packages_output.results[0].results
   when: initialize_packages_output.changed and initialize_debug
 
-- debug: var=initialize_packages_remove_output
+- name: Remove packages debug output
+  debug: var=initialize_packages_remove_output.results[0].results
   when: initialize_packages_remove_output.changed and initialize_debug
 
-- debug: var=initialize_yum_update_output
+- name: Update packages debug output
+  debug: var=initialize_yum_update_output.results[0].results
   when: initialize_yum_update_output.changed and initialize_debug
 
-- debug: var=initialize_dnf_update_output
+- name: Update packages debug output
+  debug: var=initialize_dnf_update_output.results[0].results
   when: initialize_dnf_update_output.changed and initialize_debug
